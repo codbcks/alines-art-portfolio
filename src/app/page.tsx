@@ -7,7 +7,7 @@ const PortfolioDemo = () => {
       <Navigation />
       <main className="pt-16">
         <section>
-          <MasonryGallery showTitle={true} />
+          <MasonryGallery />
         </section>
       </main>
     </div>
