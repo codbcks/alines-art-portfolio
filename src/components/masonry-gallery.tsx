@@ -10,12 +10,7 @@ interface Artwork {
   medium: string;
 }
 
-interface MasonryGalleryProps {
-  artworks?: Artwork[];
-  showTitle?: boolean;
-}
-
-const MasonryGallery: React.FC<MasonryGalleryProps> = ({ artworks = [], showTitle = false }) => {
+const MasonryGallery: React.FC<{ artworks?: Artwork[] }> = ({ artworks = [] }) => {
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
   const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
 
@@ -104,26 +99,26 @@ const MasonryGallery: React.FC<MasonryGalleryProps> = ({ artworks = [], showTitl
 
   return (
     <>
-      <div className="w-full py-10 px-4 sm:px-6 md:px-40">
-        <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 md:gap-8 lg:gap-12 space-y-6 md:space-y-8 lg:space-y-12">
+      <div className="w-full px-4 py-10 sm:px-6 md:px-40">
+        <div className="columns-1 gap-6 space-y-6 sm:columns-2 md:gap-8 md:space-y-8 lg:columns-3 lg:gap-12 lg:space-y-12">
           {sampleArtworks.map((artwork) => (
-            <div key={artwork.id} className="break-inside-avoid group">
+            <div key={artwork.id} className="group break-inside-avoid">
               <div
-                className="overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-[1.02]"
+                className="cursor-pointer overflow-hidden transition-transform duration-300 hover:scale-[1.02]"
                 onClick={() => handleImageClick(artwork)}
               >
                 {!imageErrors.has(artwork.id) ? (
                   <img
                     src={artwork.image}
                     alt={artwork.title}
-                    className="w-full h-auto object-cover transition-opacity duration-300 group-hover:opacity-90"
+                    className="h-auto w-full object-cover transition-opacity duration-300 group-hover:opacity-90"
                     loading="lazy"
                     onError={() => handleImageError(artwork.id)}
                   />
                 ) : (
-                  <div className="w-full aspect-[3/4] bg-gray-100 flex items-center justify-center">
+                  <div className="flex aspect-[3/4] w-full items-center justify-center bg-gray-100">
                     <div className="text-center text-gray-500">
-                      <div className="text-2xl mb-2">🖼️</div>
+                      <div className="mb-2 text-2xl">🖼️</div>
                       <p className="text-sm">Image unavailable</p>
                     </div>
                   </div>
@@ -137,13 +132,13 @@ const MasonryGallery: React.FC<MasonryGalleryProps> = ({ artworks = [], showTitl
       {/* Modal for enlarged view */}
       {selectedArtwork && (
         <div
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
           onClick={() => setSelectedArtwork(null)}
         >
-          <div className="relative max-w-5xl max-h-full flex flex-col">
+          <div className="relative flex max-h-full max-w-5xl flex-col">
             <button
               onClick={() => setSelectedArtwork(null)}
-              className="absolute -top-12 right-0 text-white hover:text-gray-300 text-lg font-light transition-colors z-10"
+              className="absolute -top-12 right-0 z-10 text-lg font-light text-white transition-colors hover:text-gray-300"
             >
               ✕ Close
             </button>
@@ -151,11 +146,11 @@ const MasonryGallery: React.FC<MasonryGalleryProps> = ({ artworks = [], showTitl
               <img
                 src={selectedArtwork.image}
                 alt={selectedArtwork.title}
-                className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+                className="max-h-[80vh] max-w-full rounded-lg object-contain shadow-2xl"
               />
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent text-white p-6 rounded-b-lg">
-                <h3 className="text-xl md:text-2xl font-light mb-1">{selectedArtwork.title}</h3>
-                <p className="text-sm md:text-base opacity-90">
+              <div className="absolute bottom-0 left-0 right-0 rounded-b-lg bg-gradient-to-t from-black/80 to-transparent p-6 text-white">
+                <h3 className="mb-1 text-xl font-light md:text-2xl">{selectedArtwork.title}</h3>
+                <p className="text-sm opacity-90 md:text-base">
                   {selectedArtwork.medium}, {selectedArtwork.year}
                 </p>
               </div>
