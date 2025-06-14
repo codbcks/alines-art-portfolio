@@ -15,6 +15,7 @@ export const artworks = pgTable('artworks', {
 export const galleries = pgTable('galleries', {
   id: serial('id').primaryKey(),
   title: varchar('title', { length: 255 }).notNull(),
+  slug: varchar('slug', { length: 255 }).notNull().unique(),
 });
 
 export const galleriesRelations = relations(galleries, ({ many }) => ({

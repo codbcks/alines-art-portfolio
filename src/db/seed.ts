@@ -1,8 +1,14 @@
 import 'dotenv/config';
+import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { artworks, galleries } from './db/schema';
+import { artworks, galleries } from './schema';
 
-const db = drizzle(process.env.DATABASE_URL!);
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL environment variable is not defined');
+}
+
+const sql = neon(process.env.DATABASE_URL);
+const db = drizzle(sql);
 
 function generateArtworkData(galleryIds: number[]) {
   const titles = [
@@ -77,9 +83,9 @@ async function main() {
 
   // Create galleries
   const galleryData = [
-    { title: 'Modern Masters' },
-    { title: 'Renaissance Collection' },
-    { title: 'Contemporary Visions' },
+    { title: 'Modern Masters', slug: 'modern-masters' },
+    { title: 'Renaissance Collection', slug: 'renaissance-collection' },
+    { title: 'Contemporary Visions', slug: 'contemporary-visions' },
   ];
 
   const insertedGalleries = await db.insert(galleries).values(galleryData).returning();
