@@ -2,36 +2,22 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useGalleries } from '@/hooks/useGalleries';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
-
-  const galleryItems = [
-    { label: 'Guy', href: '/guy' },
-    { label: '222', href: '/222' },
-    { label: '228', href: '/228' },
-    { label: '242', href: '/242' },
-    { label: '245', href: '/245' },
-    { label: 'Re-Directed', href: '/re-directed' },
-    { label: '229', href: '/229' },
-    { label: '246', href: '/246' },
-    { label: 'Interwoven', href: '/interwoven' },
-    { label: 'Seeing and Knowing', href: '/seeing-and-knowing' },
-    { label: 'Smooth Muscle', href: '/smooth-muscle' },
-  ];
+  const { galleries, loading } = useGalleries();
 
   const navItems = [
     { label: 'bio', href: '/bio' },
     { label: 'cv', href: '/cv' },
-    { label: 'contact', href: '/contact' },
   ];
 
   return (
     <nav className="fixed left-0 right-0 top-0 z-50 bg-white/85 shadow-sm backdrop-blur-md">
       <div className="max-w-8xl mx-auto px-5 sm:px-10 lg:px-20">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo - Make it a Link to home */}
           <Link href="/" className="flex items-center transition-opacity hover:opacity-80">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
               <span className="font-serif text-lg text-gray-600">AY</span>
@@ -60,13 +46,19 @@ const Navigation = () => {
               </button>
               <div className="invisible absolute left-0 z-50 mt-1 min-w-max translate-y-2 transform rounded-lg border border-gray-100 bg-white opacity-0 shadow-lg transition-all duration-200 ease-out group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
                 <div className="py-2">
-                  {galleryItems.map((item) => (
-                    <Link key={item.label} href={item.href}>
-                      <span className="block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 hover:text-purple-900">
-                        {item.label}
-                      </span>
-                    </Link>
-                  ))}
+                  {loading ? (
+                    <div className="px-4 py-2 text-sm text-gray-500">Loading galleries...</div>
+                  ) : galleries.length === 0 ? (
+                    <div className="px-4 py-2 text-sm text-gray-500">No galleries found</div>
+                  ) : (
+                    galleries.map((gallery) => (
+                      <Link key={gallery.id} href={`/${gallery.slug}`}>
+                        <span className="block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 hover:text-purple-900">
+                          {gallery.title}
+                        </span>
+                      </Link>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
@@ -134,7 +126,7 @@ const Navigation = () => {
               onClick={() => setIsGalleryOpen(!isGalleryOpen)}
               className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left font-medium text-gray-700 transition-colors hover:bg-gray-100"
             >
-              Gallery
+              gallery
               <svg
                 className={`h-4 w-4 transition-transform duration-200 ${
                   isGalleryOpen ? 'rotate-180' : ''
@@ -157,19 +149,25 @@ const Navigation = () => {
               }`}
             >
               <div className="ml-4 space-y-1 pt-1">
-                {galleryItems.map((item) => (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    className="block rounded-md px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      setIsGalleryOpen(false);
-                    }}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+                {loading ? (
+                  <div className="px-3 py-2 text-sm text-gray-500">Loading galleries...</div>
+                ) : galleries.length === 0 ? (
+                  <div className="px-3 py-2 text-sm text-gray-500">No galleries found</div>
+                ) : (
+                  galleries.map((gallery) => (
+                    <Link
+                      key={gallery.id}
+                      href={`/${gallery.slug}`}
+                      className="block rounded-md px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        setIsGalleryOpen(false);
+                      }}
+                    >
+                      {gallery.title}
+                    </Link>
+                  ))
+                )}
               </div>
             </div>
           </div>

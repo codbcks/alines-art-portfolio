@@ -1,17 +1,11 @@
-import Navigation from '../components/navigation';
 import MasonryGallery from '../components/masonry-gallery';
 
-const PortfolioDemo = () => {
+const LandingPage = () => {
   return (
-    <div className="min-h-screen bg-white">
-      <Navigation />
-      <main className="pt-16">
-        <section>
-          <MasonryGallery />
-        </section>
-      </main>
-    </div>
+    <section>
+      <MasonryGallery />
+    </section>
   );
 };
 
-export default PortfolioDemo;
+export default LandingPage;
