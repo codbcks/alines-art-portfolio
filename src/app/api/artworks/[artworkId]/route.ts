@@ -1,31 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { artworkSchema } from '@/db/validations/artwork';
-import { db } from '@/db';
-import { artworks } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { Artwork } from '@/types/Artwork';
+import { updateArtwork } from '@/services/server/artworkService';
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: { artworkId: string } }) {
   try {
-    const id = parseInt(params.id);
-    if (isNaN(id)) {
+    const artworkId = parseInt(params.artworkId);
+    if (isNaN(artworkId)) {
       return NextResponse.json({ error: 'Invalid artwork ID' }, { status: 400 });
     }
 
-    const body = await request.json();
+    const artworkData: Partial<Artwork> = await request.json();
 
-    const validatedData = artworkSchema.parse({
-      body,
-    });
+    const validatedData = artworkSchema.parse(artworkData);
 
-    const [updatedArtwork] = await db
-      .update(artworks)
-      .set(validatedData)
-      .where(eq(artworks.id, id))
-      .returning();
-
-    if (!updatedArtwork) {
-      return NextResponse.json({ error: 'Artwork not found' }, { status: 404 });
-    }
+    const updatedArtwork = updateArtwork(artworkId, validatedData);
 
     return NextResponse.json(updatedArtwork);
   } catch (error) {

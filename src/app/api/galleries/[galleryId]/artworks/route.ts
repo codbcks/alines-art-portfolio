@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Artwork } from '@/types/Artwork';
-import { queryArtworksByGalleryId } from '@/services/server/queryArtworksByGalleryId';
-import { updateArtworksOrder } from '@/services/server/updateArtworksOrder';
+import { queryArtworksByGalleryId, updateArtworksOrder } from '@/services/server/artworkService';
 
 export async function GET(request: NextRequest, { params }: { params: { galleryId: string } }) {
   try {

@@ -1,4 +1,4 @@
-export const deleteGallery = async (galleryId: number): Promise<boolean> => {
+export const removeGallery = async (galleryId: number): Promise<boolean> => {
   try {
     const response = await fetch(`/api/galleries/${galleryId}`, {
       method: 'DELETE',

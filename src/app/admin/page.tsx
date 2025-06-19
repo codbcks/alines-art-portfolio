@@ -10,7 +10,9 @@ import ArtworkList from '@/components/artwork-list';
 import { reorderArtworks } from '@/services/client/reorderArtworks';
 import { getArtworks } from '@/services/client/getArtworks';
 import { getGalleries } from '@/services/client/getGalleries';
-import { deleteGallery } from '@/services/client/deleteGallery';
+import { removeGallery } from '@/services/client/removeGallery';
+import { createGallery } from '@/services/client/createGallery';
+import { updateGallery } from '@/services/client/updateGallery';
 
 const AdminDashboard = () => {
   const [galleries, setGalleries] = useState<Gallery[]>([]);
@@ -57,30 +59,26 @@ const AdminDashboard = () => {
 
   const handleGallerySubmit = async (galleryData: Partial<Gallery>) => {
     try {
-      const url = editingGallery ? `/api/galleries/${editingGallery.id}` : '/api/galleries';
-      const method = editingGallery ? 'PUT' : 'POST';
+      let newOrUpdatedGallery: Gallery;
 
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(galleryData),
-      });
-
-      if (response.ok) {
-        await fetchGalleries();
-
-        // Update selected gallery if it was edited
-        if (editingGallery && selectedGallery?.id === editingGallery.id) {
-          const updateResponse = await fetch(`/api/galleries/${editingGallery.id}`);
-          if (updateResponse.ok) {
-            const updated = await updateResponse.json();
-            setSelectedGallery(updated);
-          }
-        }
-
-        setShowGalleryForm(false);
-        setEditingGallery(null);
+      if (editingGallery) {
+        // Update existing gallery
+        newOrUpdatedGallery = await updateGallery(editingGallery.id, galleryData);
+      } else {
+        // Create new gallery
+        newOrUpdatedGallery = await createGallery(galleryData);
       }
+
+      // Refresh galleries list
+      await fetchGalleries();
+
+      // Update selected gallery if it was edited
+      if (editingGallery && selectedGallery?.id === editingGallery.id) {
+        setSelectedGallery(newOrUpdatedGallery);
+      }
+
+      setShowGalleryForm(false);
+      setEditingGallery(null);
     } catch (error) {
       console.error('Error saving gallery:', error);
     }
@@ -114,7 +112,7 @@ const AdminDashboard = () => {
   const handleDeleteGallery = async (gallery: Gallery) => {
     if (confirm(`Are you sure you want to delete "${gallery.title}"?`)) {
       try {
-        const success = await deleteGallery(gallery.id);
+        const success = await removeGallery(gallery.id);
 
         if (success) {
           // Refresh galleries list
