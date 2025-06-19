@@ -3,18 +3,19 @@ import { artworkSchema } from '@/db/validations/artwork';
 import { Artwork } from '@/types/Artwork';
 import { updateArtwork } from '@/services/server/artworkService';
 
-export async function PUT(request: NextRequest, { params }: { params: { artworkId: string } }) {
+export async function PUT(request: NextRequest, context: { params: { artworkId: string } }) {
   try {
-    const artworkId = parseInt(params.artworkId);
-    if (isNaN(artworkId)) {
+    const { artworkId } = context.params;
+    const id = parseInt(artworkId);
+
+    if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid artwork ID' }, { status: 400 });
     }
 
     const artworkData: Partial<Artwork> = await request.json();
-
     const validatedData = artworkSchema.parse(artworkData);
 
-    const updatedArtwork = updateArtwork(artworkId, validatedData);
+    const updatedArtwork = await updateArtwork(id, validatedData);
 
     return NextResponse.json(updatedArtwork);
   } catch (error) {
