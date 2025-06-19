@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 interface Artwork {
   id: number;
@@ -21,48 +22,42 @@ const MasonryGallery: React.FC<{ artworks?: Artwork[] }> = ({ artworks = [] }) =
           {
             id: 1,
             title: 'Abstract Composition I',
-            image:
-              'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=600&fit=crop&auto=format&q=80',
+            image: '/photo-1541961017774-22349e4a1262?w=400&h=600&fit=crop&auto=format&q=80',
             year: '2024',
             medium: 'Oil on Canvas',
           },
           {
             id: 2,
             title: 'Urban Landscape',
-            image:
-              'https://images.unsplash.com/photo-1506260408121-e353d10b87c7?w=800&h=400&fit=crop&auto=format&q=80',
+            image: '/photo-1506260408121-e353d10b87c7?w=800&h=400&fit=crop&auto=format&q=80',
             year: '2023',
             medium: 'Acrylic',
           },
           {
             id: 3,
             title: 'Portrait Study',
-            image:
-              'https://images.unsplash.com/photo-1575936123452-b67c3203c357?w=600&h=900&fit=crop&auto=format&q=80',
+            image: '/photo-1575936123452-b67c3203c357?w=600&h=900&fit=crop&auto=format&q=80',
             year: '2024',
             medium: 'Charcoal',
           },
           {
             id: 4,
             title: "Nature's Rhythm",
-            image:
-              'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=700&h=500&fit=crop&auto=format&q=80',
+            image: '/photo-1441974231531-c6227db76b6e?w=700&h=500&fit=crop&auto=format&q=80',
             year: '2023',
             medium: 'Watercolor',
           },
           {
             id: 5,
             title: 'Geometric Forms',
-            image:
-              'https://images.unsplash.com/photo-1476820865390-c52aeebb9891?w=900&h=600&fit=crop&auto=format&q=80',
+            image: '/photo-1476820865390-c52aeebb9891?w=900&h=600&fit=crop&auto=format&q=80',
             year: '2024',
             medium: 'Mixed Media',
           },
           {
             id: 6,
             title: 'Color Study',
-            image:
-              'https://images.unsplash.com/photo-1515405295579-ba7b45403062?w=500&h=800&fit=crop&auto=format&q=80',
+            image: '/photo-1515405295579-ba7b45403062?w=500&h=800&fit=crop&auto=format&q=80',
             year: '2023',
             medium: 'Oil Pastel',
           },
@@ -108,9 +103,11 @@ const MasonryGallery: React.FC<{ artworks?: Artwork[] }> = ({ artworks = [] }) =
                 onClick={() => handleImageClick(artwork)}
               >
                 {!imageErrors.has(artwork.id) ? (
-                  <img
+                  <Image
                     src={artwork.image}
                     alt={artwork.title}
+                    width={400}
+                    height={600}
                     className="h-auto w-full object-cover transition-opacity duration-300 group-hover:opacity-90"
                     loading="lazy"
                     onError={() => handleImageError(artwork.id)}
@@ -143,9 +140,11 @@ const MasonryGallery: React.FC<{ artworks?: Artwork[] }> = ({ artworks = [] }) =
               ✕ Close
             </button>
             <div className="relative">
-              <img
+              <Image
                 src={selectedArtwork.image}
                 alt={selectedArtwork.title}
+                width={800}
+                height={600}
                 className="max-h-[80vh] max-w-full rounded-lg object-contain shadow-2xl"
               />
               <div className="absolute bottom-0 left-0 right-0 rounded-b-lg bg-gradient-to-t from-black/80 to-transparent p-6 text-white">

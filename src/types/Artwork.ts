@@ -7,4 +7,5 @@ export interface Artwork {
   description?: string; // optional
   imageUrl: string;
   galleryId: number;
+  position: number;
 }

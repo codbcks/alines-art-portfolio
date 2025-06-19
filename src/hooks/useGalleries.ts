@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchGalleriesClient } from '@/services/queryAllGalleries';
+import { fetchGalleriesClient } from '@/services/fetchGalleriesClient';
 import { Gallery } from '@/types/Gallery';
 
 export function useGalleries() {

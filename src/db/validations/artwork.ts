@@ -6,6 +6,9 @@ export const artworkSchema = z.object({
   year: z.number().int().min(1900).max(new Date().getFullYear()),
   dimensions: z.string().max(100).optional(),
   description: z.string().optional(),
+  imageUrl: z.string(),
+  galleryId: z.number().int(),
+  position: z.number().int(),
 });
 
 export type ArtworkInput = z.infer<typeof artworkSchema>;

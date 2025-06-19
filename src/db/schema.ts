@@ -1,5 +1,5 @@
 import { integer, pgTable, serial, text, varchar } from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm'; // Uncomment this
+import { relations } from 'drizzle-orm';
 
 export const artworks = pgTable('artworks', {
   id: serial('id').primaryKey(),
@@ -10,6 +10,7 @@ export const artworks = pgTable('artworks', {
   description: text('description'),
   imageUrl: varchar('image_url', { length: 500 }).notNull(),
   galleryId: integer('gallery_id').references(() => galleries.id),
+  position: integer('position').notNull(),
 });
 
 export const galleries = pgTable('galleries', {
