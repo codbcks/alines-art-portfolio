@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { fetchGalleriesClient } from '@/services/fetchGalleriesClient';
+import { getGalleries } from '@/services/client/getGalleries';
 import { Gallery } from '@/types/Gallery';
 
 export function useGalleries() {
@@ -7,7 +7,7 @@ export function useGalleries() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchGalleriesClient().then((data) => {
+    getGalleries().then((data) => {
       setGalleries(data);
       setLoading(false);
     });

@@ -7,6 +7,8 @@ import { Artwork } from '@/types/Artwork';
 import GalleryForm from '@/components/form/gallery-form';
 import ArtworkForm from '@/components/form/artwork-form';
 import ArtworkList from '@/components/artwork-list';
+import { reorderArtworks } from '@/services/client/reorderArtworks';
+import { getArtworks } from '@/services/client/getArtworks';
 
 const AdminDashboard = () => {
   const [galleries, setGalleries] = useState<Gallery[]>([]);
@@ -45,8 +47,7 @@ const AdminDashboard = () => {
 
   const fetchArtworks = async (galleryId: number) => {
     try {
-      const response = await fetch(`/api/galleries/${galleryId}/artworks`);
-      const data = await response.json();
+      const data = await getArtworks(galleryId);
       setArtworks(data);
     } catch (error) {
       console.error('Error fetching artworks:', error);
@@ -89,7 +90,7 @@ const AdminDashboard = () => {
       if (!editingArtwork) {
         artworkData.position = artworks.length;
       }
-      
+
       const url = editingArtwork ? `/api/artworks/${editingArtwork.id}` : '/api/artworks';
       const method = editingArtwork ? 'PUT' : 'POST';
 
@@ -145,14 +146,11 @@ const AdminDashboard = () => {
   };
 
   const handleArtworkReorder = async (reorderedArtworks: Artwork[]) => {
-    try {
-      const response = await fetch(`/api/galleries/${selectedGallery?.id}/artworks/reorder`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ artworks: reorderedArtworks }),
-      });
+    if (!selectedGallery) return;
 
-      if (response.ok) {
+    try {
+      const success = await reorderArtworks(selectedGallery.id, reorderedArtworks);
+      if (success) {
         setArtworks(reorderedArtworks);
       }
     } catch (error) {

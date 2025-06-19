@@ -3,8 +3,8 @@ export interface Artwork {
   title: string;
   medium: string;
   year: number;
-  dimensions?: string; // optional
-  description?: string; // optional
+  dimensions: string | null; // optional
+  description: string | null; // optional
   imageUrl: string;
   galleryId: number;
   position: number;

@@ -1,6 +1,6 @@
 import { Gallery } from '@/types/Gallery';
 
-export const fetchGalleriesClient = async (): Promise<Gallery[]> => {
+export const getGalleries = async (): Promise<Gallery[]> => {
   try {
     const response = await fetch('/api/galleries');
     if (!response.ok) throw new Error('Failed to fetch galleries');

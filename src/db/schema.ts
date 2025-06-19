@@ -9,7 +9,9 @@ export const artworks = pgTable('artworks', {
   dimensions: varchar('dimensions', { length: 100 }),
   description: text('description'),
   imageUrl: varchar('image_url', { length: 500 }).notNull(),
-  galleryId: integer('gallery_id').references(() => galleries.id),
+  galleryId: integer('gallery_id')
+    .references(() => galleries.id)
+    .notNull(),
   position: integer('position').notNull(),
 });
 
