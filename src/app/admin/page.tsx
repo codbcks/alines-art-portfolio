@@ -9,6 +9,8 @@ import ArtworkForm from '@/components/form/artwork-form';
 import ArtworkList from '@/components/artwork-list';
 import { reorderArtworks } from '@/services/client/reorderArtworks';
 import { getArtworks } from '@/services/client/getArtworks';
+import { getGalleries } from '@/services/client/getGalleries';
+import { deleteGallery } from '@/services/client/deleteGallery';
 
 const AdminDashboard = () => {
   const [galleries, setGalleries] = useState<Gallery[]>([]);
@@ -32,8 +34,7 @@ const AdminDashboard = () => {
 
   const fetchGalleries = async () => {
     try {
-      const response = await fetch('/api/galleries');
-      const data = await response.json();
+      const data = await getGalleries();
       setGalleries(data);
       if (data.length > 0 && !selectedGallery) {
         setSelectedGallery(data[0]);
@@ -113,12 +114,13 @@ const AdminDashboard = () => {
   const handleDeleteGallery = async (gallery: Gallery) => {
     if (confirm(`Are you sure you want to delete "${gallery.title}"?`)) {
       try {
-        const response = await fetch(`/api/galleries/${gallery.id}`, {
-          method: 'DELETE',
-        });
+        const success = await deleteGallery(gallery.id);
 
-        if (response.ok) {
+        if (success) {
+          // Refresh galleries list
           await fetchGalleries();
+
+          // Reset selected gallery if it was the deleted one
           if (selectedGallery?.id === gallery.id) {
             setSelectedGallery(galleries[0] || null);
           }

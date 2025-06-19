@@ -10,7 +10,7 @@ export const artworks = pgTable('artworks', {
   description: text('description'),
   imageUrl: varchar('image_url', { length: 500 }).notNull(),
   galleryId: integer('gallery_id')
-    .references(() => galleries.id)
+    .references(() => galleries.id, { onDelete: 'cascade' })
     .notNull(),
   position: integer('position').notNull(),
 });
