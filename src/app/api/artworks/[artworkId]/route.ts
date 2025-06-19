@@ -3,9 +3,12 @@ import { artworkSchema } from '@/db/validations/artwork';
 import { Artwork } from '@/types/Artwork';
 import { updateArtwork } from '@/services/server/artworkService';
 
-export async function PUT(request: NextRequest, context: { params: { artworkId: string } }) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ artworkId: string }> },
+) {
   try {
-    const { artworkId } = context.params;
+    const { artworkId } = await params;
     const id = parseInt(artworkId);
 
     if (isNaN(id)) {

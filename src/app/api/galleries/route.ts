@@ -14,7 +14,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const galleryData: Partial<Gallery> = await request.json();
+    const galleryData: Gallery = await request.json();
     const newGallery = await insertGallery(galleryData);
     return NextResponse.json(newGallery, { status: 201 });
   } catch (error) {
