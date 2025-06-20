@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Edit, GripVertical, Image as ImageIcon, Trash2 } from 'lucide-react';
+import { Edit, GripVertical, ImageIcon, Trash2 } from 'lucide-react';
 import { Artwork } from '@/types/Artwork';
-import Image from 'next/image';
 
 interface ArtworkListProps {
   artworks: Artwork[];
@@ -100,7 +99,7 @@ const ArtworkList: React.FC<ArtworkListProps> = ({ artworks, onEdit, onDelete, o
 
           {/* Artwork thumbnail */}
           {artwork.imageUrl ? (
-            <Image
+            <img
               src={artwork.imageUrl}
               alt={artwork.title}
               className="h-16 w-16 rounded object-cover"

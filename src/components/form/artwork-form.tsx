@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { Upload, X } from 'lucide-react';
 import { CldUploadWidget, CloudinaryUploadWidgetResults } from 'next-cloudinary';
 import { Artwork } from '@/types/Artwork';
-import Image from 'next/image';
 
 interface ArtworkFormProps {
   artwork?: Artwork | null;
@@ -104,7 +103,7 @@ const ArtworkForm: React.FC<ArtworkFormProps> = ({ artwork, onSubmit, onClose })
 
             {imageUrl ? (
               <div className="relative">
-                <Image
+                <img
                   src={imageUrl}
                   alt="Artwork preview"
                   width={500}
@@ -121,10 +120,10 @@ const ArtworkForm: React.FC<ArtworkFormProps> = ({ artwork, onSubmit, onClose })
               </div>
             ) : (
               <CldUploadWidget
-                uploadPreset="your_upload_preset"
+                signatureEndpoint="/api/sign-image"
                 onSuccess={handleUploadSuccess}
                 options={{
-                  sources: ['local', 'url'],
+                  sources: ['local'],
                   multiple: false,
                   maxFiles: 1,
                   styles: {
