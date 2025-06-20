@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getGalleries } from '@/services/client/getGalleries';
 import { Gallery } from '@/types/Gallery';
+import { getGalleries } from '@/services/client/galleryClientService';
 
 export function useGalleries() {
   const [galleries, setGalleries] = useState<Gallery[]>([]);

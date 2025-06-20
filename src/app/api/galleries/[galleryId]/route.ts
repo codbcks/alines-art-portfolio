@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Gallery } from '@/types/Gallery';
-import { deleteGallery, updateGallery } from '@/services/server/galleryService';
+import { deleteGallery, updateGallery } from '@/services/server/galleryServerService';
 
 export async function DELETE(
   request: NextRequest,

@@ -26,5 +26,11 @@ export const deleteGallery = async (galleryId: number) => {
 };
 
 export const queryAllGalleries = async (): Promise<Gallery[]> => {
-  return await db.select().from(galleries);
+  return db.select().from(galleries);
+};
+
+export const queryGalleryBySlug = async (slug: string) => {
+  return db.query.galleries.findFirst({
+    where: (galleries, { eq }) => eq(galleries.slug, slug),
+  });
 };

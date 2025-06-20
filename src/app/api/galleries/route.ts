@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { insertGallery, queryAllGalleries } from '@/services/server/galleryService';
+import { insertGallery, queryAllGalleries } from '@/services/server/galleryServerService';
 import { Gallery } from '@/types/Gallery';
 
 export async function GET() {

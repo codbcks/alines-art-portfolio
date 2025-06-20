@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { artworkSchema } from '@/db/validations/artwork';
 import { Artwork } from '@/types/Artwork';
-import { updateArtwork } from '@/services/server/artworkService';
+import { updateArtwork } from '@/services/server/artworkServerService';
 
 export async function PUT(
   request: NextRequest,

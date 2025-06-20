@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Artwork } from '@/types/Artwork';
-import { queryArtworksByGalleryId, updateArtworksOrder } from '@/services/server/artworkService';
+import {
+  queryArtworksByGalleryId,
+  updateArtworksOrder,
+} from '@/services/server/artworkServerService';
 
 export async function GET(
   request: NextRequest,

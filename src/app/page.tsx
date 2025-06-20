@@ -1,4 +1,4 @@
-import MasonryGallery from '../components/masonry-gallery';
+import MasonryGallery from '@/components/masonry-gallery';
 
 const LandingPage = () => {
   return (

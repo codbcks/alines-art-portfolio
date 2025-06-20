@@ -7,12 +7,13 @@ import { Artwork } from '@/types/Artwork';
 import GalleryForm from '@/components/form/gallery-form';
 import ArtworkForm from '@/components/form/artwork-form';
 import ArtworkList from '@/components/artwork-list';
-import { reorderArtworks } from '@/services/client/reorderArtworks';
-import { getArtworks } from '@/services/client/getArtworks';
-import { getGalleries } from '@/services/client/getGalleries';
-import { removeGallery } from '@/services/client/removeGallery';
-import { createGallery } from '@/services/client/createGallery';
-import { updateGallery } from '@/services/client/updateGallery';
+import {
+  createGallery,
+  getGalleries,
+  removeGallery,
+  updateGallery,
+} from '@/services/client/galleryClientService';
+import { getArtworksById, reorderArtworks } from '@/services/client/artworkClientService';
 
 const AdminDashboard = () => {
   const [galleries, setGalleries] = useState<Gallery[]>([]);
@@ -50,7 +51,7 @@ const AdminDashboard = () => {
 
   const fetchArtworks = async (galleryId: number) => {
     try {
-      const data = await getArtworks(galleryId);
+      const data = await getArtworksById(galleryId);
       setArtworks(data);
     } catch (error) {
       console.error('Error fetching artworks:', error);
