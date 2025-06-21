@@ -2,6 +2,11 @@ import { db } from '@/db';
 import { artworks } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { Artwork } from '@/types/Artwork';
+import { ArtworkCreateInput, ArtworkUpdateInput } from '@/db/validations/artwork';
+
+export const createArtworks = async (artworkData: ArtworkCreateInput) => {
+  return db.insert(artworks).values(artworkData).returning();
+};
 
 export const updateArtworksOrder = async (galleryId: number, artworksData: Artwork[]) => {
   await db.transaction(async (tx) => {
@@ -22,7 +27,7 @@ export const queryArtworksByGalleryId = async (galleryId: number): Promise<Artwo
     .orderBy(artworks.position);
 };
 
-export const updateArtwork = async (artworkId: number, artworkData: Artwork): Promise<Artwork> => {
+export const updateArtwork = async (artworkId: number, artworkData: ArtworkUpdateInput) => {
   const result = await db
     .update(artworks)
     .set(artworkData)

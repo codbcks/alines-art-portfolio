@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { artworkCreateSchema } from '@/db/validations/artwork';
-import { db } from '@/db';
-import { artworks } from '@/db/schema';
 import { ZodError } from 'zod';
+import { createArtworks } from '@/services/server/artworkServerService';
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,7 +10,7 @@ export async function POST(request: NextRequest) {
     const validatedData = artworkCreateSchema.parse(body);
 
     // Insert artwork using validated data
-    const [newArtwork] = await db.insert(artworks).values(validatedData).returning();
+    const [newArtwork] = await createArtworks(validatedData);
 
     return NextResponse.json(newArtwork, { status: 201 });
   } catch (error) {
