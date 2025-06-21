@@ -27,17 +27,14 @@ const GalleryForm: React.FC<GalleryFormProps> = ({ gallery, onSubmit, onClose })
 
   // Auto-generate slug from title
   useEffect(() => {
-    if (!gallery) {
-      // Only auto-generate for new galleries
-      const newSlug = title
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .trim();
-      setSlug(newSlug);
-    }
-  }, [title, gallery]);
+    const newSlug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+    setSlug(newSlug);
+  }, [title]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +42,7 @@ const GalleryForm: React.FC<GalleryFormProps> = ({ gallery, onSubmit, onClose })
 
     setLoading(true);
     try {
-      await onSubmit({ title: title.trim(), slug: slug.trim() });
+      onSubmit({ title: title.trim(), slug: slug.trim() });
     } finally {
       setLoading(false);
     }
@@ -80,24 +77,6 @@ const GalleryForm: React.FC<GalleryFormProps> = ({ gallery, onSubmit, onClose })
               placeholder="Enter gallery title"
               required
             />
-          </div>
-
-          <div>
-            <label htmlFor="slug" className="mb-1 block text-sm font-medium text-gray-700">
-              URL Slug *
-            </label>
-            <input
-              type="text"
-              id="slug"
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="gallery-url-slug"
-              required
-              pattern="[a-z0-9-]+"
-              title="Only lowercase letters, numbers, and hyphens allowed"
-            />
-            <p className="mt-1 text-xs text-gray-500">This will be the URL: /{slug}</p>
           </div>
 
           <div className="flex space-x-3 pt-4">
