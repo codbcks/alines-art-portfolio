@@ -10,7 +10,7 @@ if (!process.env.DATABASE_URL) {
 const sql = neon(process.env.DATABASE_URL);
 const db = drizzle(sql);
 
-function generateArtworkData(galleryIds: number[]) {
+function generateArtworkData(galleryIds: number[], positionCounter: Record<number, number>) {
   const titles = [
     'Starry Night',
     'Water Lilies',
@@ -62,6 +62,11 @@ function generateArtworkData(galleryIds: number[]) {
     return `${adjectives[Math.floor(Math.random() * adjectives.length)]} ${nouns[Math.floor(Math.random() * nouns.length)]}`;
   };
 
+  const galleryId = galleryIds[Math.floor(Math.random() * galleryIds.length)];
+
+  const position = positionCounter[galleryId];
+  positionCounter[galleryId]++;
+
   return {
     title: randomTitle(),
     medium: mediums[Math.floor(Math.random() * mediums.length)],
@@ -69,7 +74,8 @@ function generateArtworkData(galleryIds: number[]) {
     dimensions: `${Math.floor(Math.random() * 150 + 30)}x${Math.floor(Math.random() * 150 + 30)} cm`,
     description: 'A captivating artwork that explores themes of light and space',
     imageUrl: `https://picsum.photos/seed/${Math.random()}/600/800`,
-    galleryId: galleryIds[Math.floor(Math.random() * galleryIds.length)],
+    galleryId: galleryId,
+    position: position,
   };
 }
 
@@ -97,8 +103,11 @@ async function main() {
   const artworkData = [];
   const artworkCount = 20;
 
+  const positionCounter: Record<number, number> = {};
+  galleryIds.forEach((id) => (positionCounter[id] = 0));
+
   for (let i = 0; i < artworkCount; i++) {
-    artworkData.push(generateArtworkData(galleryIds));
+    artworkData.push(generateArtworkData(galleryIds, positionCounter));
   }
 
   const insertedArtworks = await db.insert(artworks).values(artworkData).returning();
@@ -106,10 +115,18 @@ async function main() {
 
   // Verify data
   const galleryArtworkCounts: Record<string, number> = {};
+  const galleryPositionRanges: Record<string, string> = {};
 
   for (const gallery of insertedGalleries) {
-    const count = insertedArtworks.filter((a) => a.galleryId === gallery.id).length;
-    galleryArtworkCounts[gallery.title] = count;
+    const galleryArtworks = insertedArtworks.filter((a) => a.galleryId === gallery.id);
+    galleryArtworkCounts[gallery.title] = galleryArtworks.length;
+
+    if (galleryArtworks.length > 0) {
+      const positions = galleryArtworks.map((a) => a.position).sort((a, b) => a - b);
+      galleryPositionRanges[gallery.title] = `${positions[0]}-${positions[positions.length - 1]}`;
+    } else {
+      galleryPositionRanges[gallery.title] = 'N/A';
+    }
   }
 
   console.log('\nGallery Artwork Counts:');

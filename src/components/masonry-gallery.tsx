@@ -1,95 +1,35 @@
 'use client';
 
-import React, { useState } from 'react';
-
-interface Artwork {
-  id: number;
-  title: string;
-  image: string;
-  year: string;
-  medium: string;
-}
+import React, { useCallback, useEffect, useState } from 'react';
+import { CldImage } from 'next-cloudinary';
+import { Artwork } from '@/types/Artwork';
 
 const MasonryGallery: React.FC<{ artworks?: Artwork[] }> = ({ artworks = [] }) => {
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
-  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
+  const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
 
-  const sampleArtworks: Artwork[] =
-    artworks.length > 0
-      ? artworks
-      : [
-          {
-            id: 1,
-            title: 'Abstract Composition I',
-            image:
-              'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=600&fit=crop&auto=format&q=80',
-            year: '2024',
-            medium: 'Oil on Canvas',
-          },
-          {
-            id: 2,
-            title: 'Urban Landscape',
-            image:
-              'https://images.unsplash.com/photo-1506260408121-e353d10b87c7?w=800&h=400&fit=crop&auto=format&q=80',
-            year: '2023',
-            medium: 'Acrylic',
-          },
-          {
-            id: 3,
-            title: 'Portrait Study',
-            image:
-              'https://images.unsplash.com/photo-1575936123452-b67c3203c357?w=600&h=900&fit=crop&auto=format&q=80',
-            year: '2024',
-            medium: 'Charcoal',
-          },
-          {
-            id: 4,
-            title: "Nature's Rhythm",
-            image:
-              'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=700&h=500&fit=crop&auto=format&q=80',
-            year: '2023',
-            medium: 'Watercolor',
-          },
-          {
-            id: 5,
-            title: 'Geometric Forms',
-            image:
-              'https://images.unsplash.com/photo-1476820865390-c52aeebb9891?w=900&h=600&fit=crop&auto=format&q=80',
-            year: '2024',
-            medium: 'Mixed Media',
-          },
-          {
-            id: 6,
-            title: 'Color Study',
-            image:
-              'https://images.unsplash.com/photo-1515405295579-ba7b45403062?w=500&h=800&fit=crop&auto=format&q=80',
-            year: '2023',
-            medium: 'Oil Pastel',
-          },
-        ];
+  const handleImageError = useCallback((artworkId: number) => {
+    setImageErrors((prev) => ({ ...prev, [artworkId]: true }));
+  }, []);
 
-  const handleImageError = (artworkId: number) => {
-    setImageErrors((prev) => new Set(prev).add(artworkId));
-  };
-
-  const handleImageClick = (artwork: Artwork) => {
-    if (!imageErrors.has(artwork.id)) {
-      setSelectedArtwork(artwork);
-    }
-  };
-
-  // Close modal on escape key
-  React.useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setSelectedArtwork(null);
+  const handleImageClick = useCallback(
+    (artwork: Artwork) => {
+      if (!imageErrors[artwork.id]) {
+        setSelectedArtwork(artwork);
       }
+    },
+    [imageErrors],
+  );
+
+  useEffect(() => {
+    if (!selectedArtwork) return;
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedArtwork(null);
     };
 
-    if (selectedArtwork) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
-    }
+    document.addEventListener('keydown', handleEscape);
+    document.body.style.overflow = 'hidden';
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
@@ -101,18 +41,19 @@ const MasonryGallery: React.FC<{ artworks?: Artwork[] }> = ({ artworks = [] }) =
     <>
       <div className="w-full px-4 py-10 sm:px-6 md:px-40">
         <div className="columns-1 gap-6 space-y-6 sm:columns-2 md:gap-8 md:space-y-8 lg:columns-3 lg:gap-12 lg:space-y-12">
-          {sampleArtworks.map((artwork) => (
+          {artworks.map((artwork) => (
             <div key={artwork.id} className="group break-inside-avoid">
               <div
                 className="cursor-pointer overflow-hidden transition-transform duration-300 hover:scale-[1.02]"
                 onClick={() => handleImageClick(artwork)}
               >
-                {!imageErrors.has(artwork.id) ? (
-                  <img
-                    src={artwork.image}
+                {!imageErrors[artwork.id] ? (
+                  <CldImage
+                    src={artwork.imageUrl}
                     alt={artwork.title}
+                    width={400}
+                    height={600}
                     className="h-auto w-full object-cover transition-opacity duration-300 group-hover:opacity-90"
-                    loading="lazy"
                     onError={() => handleImageError(artwork.id)}
                   />
                 ) : (
@@ -129,7 +70,6 @@ const MasonryGallery: React.FC<{ artworks?: Artwork[] }> = ({ artworks = [] }) =
         </div>
       </div>
 
-      {/* Modal for enlarged view */}
       {selectedArtwork && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
@@ -143,9 +83,11 @@ const MasonryGallery: React.FC<{ artworks?: Artwork[] }> = ({ artworks = [] }) =
               ✕ Close
             </button>
             <div className="relative">
-              <img
-                src={selectedArtwork.image}
+              <CldImage
+                src={selectedArtwork.imageUrl}
                 alt={selectedArtwork.title}
+                width={800}
+                height={600}
                 className="max-h-[80vh] max-w-full rounded-lg object-contain shadow-2xl"
               />
               <div className="absolute bottom-0 left-0 right-0 rounded-b-lg bg-gradient-to-t from-black/80 to-transparent p-6 text-white">
@@ -162,4 +104,4 @@ const MasonryGallery: React.FC<{ artworks?: Artwork[] }> = ({ artworks = [] }) =
   );
 };
 
-export default MasonryGallery;
+export default React.memo(MasonryGallery);
