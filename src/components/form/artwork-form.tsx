@@ -14,6 +14,7 @@ interface ArtworkFormProps {
 const ArtworkForm: React.FC<ArtworkFormProps> = ({ artwork, onSubmit, onClose }) => {
   const [title, setTitle] = useState('');
   const [medium, setMedium] = useState('');
+  const [customMedium, setCustomMedium] = useState('');
   const [year, setYear] = useState<number>(new Date().getFullYear());
   const [dimensions, setDimensions] = useState('');
   const [description, setDescription] = useState('');
@@ -23,7 +24,30 @@ const ArtworkForm: React.FC<ArtworkFormProps> = ({ artwork, onSubmit, onClose })
   useEffect(() => {
     if (artwork) {
       setTitle(artwork.title);
-      setMedium(artwork.medium);
+      const mediumValue = artwork.medium;
+      const predefinedMediums = [
+        'Oil on Canvas',
+        'Acrylic on Canvas',
+        'Watercolor',
+        'Digital Print',
+        'Charcoal Drawing',
+        'Pencil Drawing',
+        'Mixed Media',
+        'Photography',
+        'Sculpture',
+        'Installation',
+        'Video Art',
+        'Performance',
+      ];
+
+      if (predefinedMediums.includes(mediumValue)) {
+        setMedium(mediumValue);
+        setCustomMedium('');
+      } else {
+        setMedium('Other');
+        setCustomMedium(mediumValue);
+      }
+
       setYear(artwork.year);
       setDimensions(artwork.dimensions || '');
       setDescription(artwork.description || '');
@@ -31,6 +55,7 @@ const ArtworkForm: React.FC<ArtworkFormProps> = ({ artwork, onSubmit, onClose })
     } else {
       setTitle('');
       setMedium('');
+      setCustomMedium('');
       setYear(new Date().getFullYear());
       setDimensions('');
       setDescription('');
@@ -40,13 +65,14 @@ const ArtworkForm: React.FC<ArtworkFormProps> = ({ artwork, onSubmit, onClose })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !medium.trim() || !imageUrl.trim()) return;
+    const finalMedium = medium === 'Other' ? customMedium.trim() : medium.trim();
+    if (!title.trim() || !finalMedium || !imageUrl.trim()) return;
 
     setLoading(true);
     try {
       onSubmit({
         title: title.trim(),
-        medium: medium.trim(),
+        medium: finalMedium,
         year,
         dimensions: dimensions.trim() || undefined,
         description: description.trim() || undefined,
@@ -67,6 +93,13 @@ const ArtworkForm: React.FC<ArtworkFormProps> = ({ artwork, onSubmit, onClose })
     }
   };
 
+  const handleMediumChange = (value: string) => {
+    setMedium(value);
+    if (value !== 'Other') {
+      setCustomMedium('');
+    }
+  };
+
   const mediumOptions = [
     'Oil on Canvas',
     'Acrylic on Canvas',
@@ -82,6 +115,11 @@ const ArtworkForm: React.FC<ArtworkFormProps> = ({ artwork, onSubmit, onClose })
     'Performance',
     'Other',
   ];
+
+  const isFormValid = () => {
+    const finalMedium = medium === 'Other' ? customMedium.trim() : medium.trim();
+    return title.trim() && finalMedium && imageUrl.trim();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
@@ -177,14 +215,14 @@ const ArtworkForm: React.FC<ArtworkFormProps> = ({ artwork, onSubmit, onClose })
             </div>
 
             {/* Medium */}
-            <div>
+            <div className={medium === 'Other' ? 'md:col-span-2' : ''}>
               <label htmlFor="medium" className="mb-1 block text-sm font-medium text-gray-700">
                 Medium *
               </label>
               <select
                 id="medium"
                 value={medium}
-                onChange={(e) => setMedium(e.target.value)}
+                onChange={(e) => handleMediumChange(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               >
@@ -197,8 +235,29 @@ const ArtworkForm: React.FC<ArtworkFormProps> = ({ artwork, onSubmit, onClose })
               </select>
             </div>
 
+            {/* Custom Medium Input - Only shown when "Other" is selected */}
+            {medium === 'Other' && (
+              <div className="md:col-span-2">
+                <label
+                  htmlFor="customMedium"
+                  className="mb-1 block text-sm font-medium text-gray-700"
+                >
+                  Custom Medium *
+                </label>
+                <input
+                  type="text"
+                  id="customMedium"
+                  value={customMedium}
+                  onChange={(e) => setCustomMedium(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter custom medium (e.g., Pastel on Paper, Ink Wash, etc.)"
+                  required
+                />
+              </div>
+            )}
+
             {/* Year */}
-            <div>
+            <div className={medium === 'Other' ? 'md:col-span-2' : ''}>
               <label htmlFor="year" className="mb-1 block text-sm font-medium text-gray-700">
                 Year *
               </label>
@@ -255,7 +314,7 @@ const ArtworkForm: React.FC<ArtworkFormProps> = ({ artwork, onSubmit, onClose })
             </button>
             <button
               type="submit"
-              disabled={loading || !title.trim() || !medium.trim() || !imageUrl.trim()}
+              disabled={loading || !isFormValid()}
               className="flex-1 rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700 disabled:bg-green-300"
             >
               {loading ? 'Saving...' : artwork ? 'Update' : 'Add Artwork'}
