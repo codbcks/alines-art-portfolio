@@ -36,10 +36,12 @@ export async function PUT(
     }
 
     const body = await request.json();
+    console.log('Received artworks:', body.artworks);
     const artworks: Artwork[] = body.artworks;
 
     // Validate all artworks belong to this gallery
-    if (artworks.some((a) => a.galleryId !== id)) {
+    const invalidArtwork = artworks.find((a) => a.galleryId !== id);
+    if (invalidArtwork) {
       return NextResponse.json(
         { error: 'Artworks do not belong to this gallery' },
         { status: 400 },

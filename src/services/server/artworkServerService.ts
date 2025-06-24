@@ -1,6 +1,6 @@
 import { db } from '@/db';
 import { artworks } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { Artwork } from '@/types/Artwork';
 import { ArtworkCreateInput, ArtworkUpdateInput } from '@/db/validations/artwork';
 
@@ -9,14 +9,16 @@ export const createArtworks = async (artworkData: ArtworkCreateInput) => {
 };
 
 export const updateArtworksOrder = async (galleryId: number, artworksData: Artwork[]) => {
-  await db.transaction(async (tx) => {
-    for (const artwork of artworksData) {
-      await tx
-        .update(artworks)
-        .set({ position: artwork.position })
-        .where(eq(artworks.id, artwork.id));
-    }
-  });
+  if (artworksData.length === 0) return;
+
+  const values = artworksData.map((a) => sql`(${a.id}:: int, ${a.position}:: int)`);
+
+  await db.execute(sql`
+      UPDATE ${artworks} AS a
+      SET position = t.position::int
+      FROM (VALUES ${sql.join(values, sql.raw(', '))}) AS t(id, position)
+      WHERE a.id = t.id:: int
+  `);
 };
 
 export const queryArtworksByGalleryId = async (galleryId: number): Promise<Artwork[]> => {

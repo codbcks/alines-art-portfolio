@@ -9,9 +9,16 @@ interface ArtworkListProps {
   onEdit: (artwork: Artwork) => void;
   onDelete: (artwork: Artwork) => void;
   onReorder: (artworks: Artwork[]) => void;
+  reordering: boolean;
 }
 
-const ArtworkList: React.FC<ArtworkListProps> = ({ artworks, onEdit, onDelete, onReorder }) => {
+const ArtworkList: React.FC<ArtworkListProps> = ({
+  artworks,
+  onEdit,
+  onDelete,
+  onReorder,
+  reordering,
+}) => {
   const [draggedItem, setDraggedItem] = useState<number | null>(null);
   const [draggedOver, setDraggedOver] = useState<number | null>(null);
 
@@ -47,7 +54,14 @@ const ArtworkList: React.FC<ArtworkListProps> = ({ artworks, onEdit, onDelete, o
     // Insert at new position
     newArtworks.splice(dropIndex, 0, draggedArtwork);
 
-    onReorder(newArtworks);
+    console.log('Reordered artworks:', newArtworks);
+
+    const updated = newArtworks.map((art, idx) => ({
+      ...art,
+      position: idx,
+    }));
+
+    onReorder(updated);
     setDraggedItem(null);
     setDraggedOver(null);
   };
@@ -70,7 +84,13 @@ const ArtworkList: React.FC<ArtworkListProps> = ({ artworks, onEdit, onDelete, o
   }
 
   return (
-    <div className="space-y-3">
+    <div className="relative space-y-3">
+      {reordering && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/80">
+          <div className="text-lg">Updating order...</div>
+        </div>
+      )}
+
       {artworks.map((artwork, index) => (
         <div
           key={artwork.id}
