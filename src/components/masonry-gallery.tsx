@@ -1,10 +1,15 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import Masonry from 'react-masonry-css';
 import { CldImage } from 'next-cloudinary';
 import { Artwork } from '@/types/Artwork';
 
 const MasonryGallery: React.FC<{ artworks?: Artwork[] }> = ({ artworks = [] }) => {
+  const sortedArtworks = useMemo(() => {
+    return [...artworks].sort((a, b) => a.position - b.position);
+  }, [artworks]);
+
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
   const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
 
@@ -37,37 +42,46 @@ const MasonryGallery: React.FC<{ artworks?: Artwork[] }> = ({ artworks = [] }) =
     };
   }, [selectedArtwork]);
 
+  const breakpointColumnsObj = {
+    default: 3,
+    1024: 2,
+    640: 1,
+  };
+
   return (
     <>
       <div className="w-full px-4 py-10 sm:px-6 md:px-40">
-        <div className="columns-1 gap-6 space-y-6 sm:columns-2 md:gap-8 md:space-y-8 lg:columns-3 lg:gap-12 lg:space-y-12">
-          {artworks.map((artwork) => (
-            <div key={artwork.id} className="group break-inside-avoid">
-              <div
-                className="cursor-pointer overflow-hidden transition-transform duration-300 hover:scale-[1.02]"
-                onClick={() => handleImageClick(artwork)}
-              >
-                {!imageErrors[artwork.id] ? (
-                  <CldImage
-                    src={artwork.imageUrl}
-                    alt={artwork.title}
-                    width={400}
-                    height={600}
-                    className="h-auto w-full object-cover transition-opacity duration-300 group-hover:opacity-90"
-                    onError={() => handleImageError(artwork.id)}
-                  />
-                ) : (
-                  <div className="flex aspect-[3/4] w-full items-center justify-center bg-gray-100">
-                    <div className="text-center text-gray-500">
-                      <div className="mb-2 text-2xl">🖼️</div>
-                      <p className="text-sm">Image unavailable</p>
-                    </div>
+        <Masonry
+          breakpointCols={breakpointColumnsObj}
+          className="flex gap-6"
+          columnClassName="space-y-6"
+        >
+          {sortedArtworks.map((artwork) => (
+            <div
+              key={artwork.id}
+              className="group cursor-pointer"
+              onClick={() => handleImageClick(artwork)}
+            >
+              {!imageErrors[artwork.id] ? (
+                <CldImage
+                  src={artwork.imageUrl}
+                  alt={artwork.title}
+                  width={400}
+                  height={600}
+                  className="h-auto w-full object-cover transition-transform duration-300 hover:scale-[1.02] hover:opacity-90"
+                  onError={() => handleImageError(artwork.id)}
+                />
+              ) : (
+                <div className="flex aspect-[3/4] w-full items-center justify-center bg-gray-100">
+                  <div className="text-center text-gray-500">
+                    <div className="mb-2 text-2xl">🖼️</div>
+                    <p className="text-sm">Image unavailable</p>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           ))}
-        </div>
+        </Masonry>
       </div>
 
       {selectedArtwork && (

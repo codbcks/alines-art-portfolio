@@ -24,7 +24,7 @@ export const getArtworksBySlug = async (gallerySlug: string): Promise<Artwork[]>
 
 export const reorderArtworks = async (galleryId: number, artworks: Artwork[]): Promise<boolean> => {
   try {
-    const response = await fetch(`/api/galleries/${galleryId}/artworks/reorder`, {
+    const response = await fetch(`/api/galleries/${galleryId}/artworks`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ artworks }),

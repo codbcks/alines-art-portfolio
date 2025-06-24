@@ -19,11 +19,13 @@ const AdminDashboard = () => {
   const [galleries, setGalleries] = useState<Gallery[]>([]);
   const [selectedGallery, setSelectedGallery] = useState<Gallery | null>(null);
   const [artworks, setArtworks] = useState<Artwork[]>([]);
+  const [artworkCounts, setArtworkCounts] = useState<Record<number, number>>({});
   const [showGalleryForm, setShowGalleryForm] = useState(false);
   const [showArtworkForm, setShowArtworkForm] = useState(false);
   const [editingGallery, setEditingGallery] = useState<Gallery | null>(null);
   const [editingArtwork, setEditingArtwork] = useState<Artwork | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reordering, setReordering] = useState(false);
 
   useEffect(() => {
     fetchGalleries();
@@ -39,6 +41,22 @@ const AdminDashboard = () => {
     try {
       const data = await getGalleries();
       setGalleries(data);
+
+      // Fetch artwork counts for all galleries
+      const counts: Record<number, number> = {};
+      await Promise.all(
+        data.map(async (gallery) => {
+          try {
+            const galleryArtworks = await getArtworksById(gallery.id);
+            counts[gallery.id] = galleryArtworks.length;
+          } catch (error) {
+            console.error(`Error fetching artworks for gallery ${gallery.id}:`, error);
+            counts[gallery.id] = 0;
+          }
+        }),
+      );
+      setArtworkCounts(counts);
+
       if (data.length > 0 && !selectedGallery) {
         setSelectedGallery(data[0]);
       }
@@ -53,6 +71,12 @@ const AdminDashboard = () => {
     try {
       const data = await getArtworksById(galleryId);
       setArtworks(data);
+
+      // Update the count for this specific gallery
+      setArtworkCounts((prev) => ({
+        ...prev,
+        [galleryId]: data.length,
+      }));
     } catch (error) {
       console.error('Error fetching artworks:', error);
     }
@@ -68,6 +92,11 @@ const AdminDashboard = () => {
       } else {
         // Create new gallery
         newOrUpdatedGallery = await createGallery(galleryData);
+        // Set initial artwork count to 0 for new gallery
+        setArtworkCounts((prev) => ({
+          ...prev,
+          [newOrUpdatedGallery.id]: 0,
+        }));
       }
 
       // Refresh galleries list
@@ -116,12 +145,20 @@ const AdminDashboard = () => {
         const success = await removeGallery(gallery.id);
 
         if (success) {
+          // Remove the gallery from artwork counts
+          setArtworkCounts((prev) => {
+            const newCounts = { ...prev };
+            delete newCounts[gallery.id];
+            return newCounts;
+          });
+
           // Refresh galleries list
           await fetchGalleries();
 
           // Reset selected gallery if it was the deleted one
           if (selectedGallery?.id === gallery.id) {
-            setSelectedGallery(galleries[0] || null);
+            const remainingGalleries = galleries.filter((g) => g.id !== gallery.id);
+            setSelectedGallery(remainingGalleries[0] || null);
           }
         }
       } catch (error) {
@@ -149,13 +186,20 @@ const AdminDashboard = () => {
   const handleArtworkReorder = async (reorderedArtworks: Artwork[]) => {
     if (!selectedGallery) return;
 
+    setReordering(true);
     try {
       const success = await reorderArtworks(selectedGallery.id, reorderedArtworks);
       if (success) {
-        setArtworks(reorderedArtworks);
+        await fetchArtworks(selectedGallery.id);
+      } else {
+        // Revert to previous order on failure
+        await fetchArtworks(selectedGallery.id);
       }
     } catch (error) {
       console.error('Error reordering artworks:', error);
+      fetchArtworks(selectedGallery.id);
+    } finally {
+      setReordering(false);
     }
   };
 
@@ -224,7 +268,9 @@ const AdminDashboard = () => {
                         </button>
                       </div>
                     </div>
-                    <div className="mt-1 text-sm text-gray-500">{artworks.length} artworks</div>
+                    <div className="mt-1 text-sm text-gray-500">
+                      {artworkCounts[gallery.id] || 0} artworks
+                    </div>
                   </div>
                 ))}
               </div>
@@ -257,6 +303,7 @@ const AdminDashboard = () => {
                   }}
                   onDelete={handleDeleteArtwork}
                   onReorder={handleArtworkReorder}
+                  reordering={reordering}
                 />
               </div>
             ) : (
