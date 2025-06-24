@@ -78,7 +78,7 @@ const Navigation = () => {
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="inline-flex items-center justify-center rounded-md p-2 text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="inline-flex items-center justify-center rounded-md p-2 text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"
               aria-expanded={isMenuOpen}
               aria-label="Open menu"
             >
@@ -145,10 +145,10 @@ const Navigation = () => {
             </button>
             <div
               className={`overflow-hidden transition-all duration-200 ${
-                isGalleryOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
+                isGalleryOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
               }`}
             >
-              <div className="ml-4 space-y-1 pt-1">
+              <div className="ml-4 max-h-80 space-y-1 overflow-y-auto pt-1">
                 {loading ? (
                   <div className="px-3 py-2 text-sm text-gray-500">Loading galleries...</div>
                 ) : galleries.length === 0 ? (
