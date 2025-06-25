@@ -13,7 +13,12 @@ import {
   removeGallery,
   updateGallery,
 } from '@/services/client/galleryClientService';
-import { getArtworksById, reorderArtworks } from '@/services/client/artworkClientService';
+import {
+  deleteArtwork,
+  getArtworksById,
+  reorderArtworks,
+  saveArtwork,
+} from '@/services/client/artworkClientService';
 
 const AdminDashboard = () => {
   const [galleries, setGalleries] = useState<Gallery[]>([]);
@@ -115,21 +120,23 @@ const AdminDashboard = () => {
   };
 
   const handleArtworkSubmit = async (artworkData: Partial<Artwork>) => {
+    if (!selectedGallery) {
+      console.error('No gallery selected');
+      return;
+    }
+
     try {
       if (!editingArtwork) {
         artworkData.position = artworks.length;
       }
 
-      const url = editingArtwork ? `/api/artworks/${editingArtwork.id}` : '/api/artworks';
-      const method = editingArtwork ? 'PUT' : 'POST';
+      const success = await saveArtwork(
+        artworkData,
+        selectedGallery!.id,
+        editingArtwork ?? undefined,
+      );
 
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...artworkData, galleryId: selectedGallery?.id }),
-      });
-
-      if (response.ok) {
+      if (success) {
         await fetchArtworks(selectedGallery!.id);
         setShowArtworkForm(false);
         setEditingArtwork(null);
@@ -170,11 +177,9 @@ const AdminDashboard = () => {
   const handleDeleteArtwork = async (artwork: Artwork) => {
     if (confirm(`Are you sure you want to delete "${artwork.title}"?`)) {
       try {
-        const response = await fetch(`/api/artworks/${artwork.id}`, {
-          method: 'DELETE',
-        });
+        const success = await deleteArtwork(artwork.id);
 
-        if (response.ok) {
+        if (success) {
           await fetchArtworks(selectedGallery!.id);
         }
       } catch (error) {

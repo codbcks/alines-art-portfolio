@@ -74,8 +74,8 @@ const ArtworkForm: React.FC<ArtworkFormProps> = ({ artwork, onSubmit, onClose })
         title: title.trim(),
         medium: finalMedium,
         year,
-        dimensions: dimensions.trim() || undefined,
-        description: description.trim() || undefined,
+        dimensions: dimensions.trim(),
+        description: description.trim(),
         imageUrl: imageUrl.trim(),
       });
     } finally {
