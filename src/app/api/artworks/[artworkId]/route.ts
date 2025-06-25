@@ -53,8 +53,12 @@ export async function PUT(
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { artworkId: string } }) {
-  const id = parseInt(params.artworkId);
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ artworkId: string }> },
+) {
+  const { artworkId } = await params;
+  const id = parseInt(artworkId);
   if (isNaN(id)) return NextResponse.json({ error: 'Invalid ID' }, { status: 400 });
 
   try {
