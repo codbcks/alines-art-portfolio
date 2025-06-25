@@ -38,3 +38,7 @@ export const updateArtwork = async (artworkId: number, artworkData: ArtworkUpdat
 
   return result[0];
 };
+
+export const deleteArtwork = async (artworkId: number) => {
+  return db.delete(artworks).where(eq(artworks.id, artworkId));
+};
