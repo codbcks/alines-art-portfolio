@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useGalleries } from '@/hooks/useGalleries';
 
-const Navigation = () => {
+const NavigationBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const { galleries, loading } = useGalleries();
@@ -188,4 +188,4 @@ const Navigation = () => {
   );
 };
 
-export default Navigation;
+export default NavigationBar;
