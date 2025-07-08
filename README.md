@@ -1,8 +1,5 @@
 ## Architecture and Rationales
 
-This portfolio website was designed for a fine arts student to showcase visual artworks in a performant, scalable, and modern web environment. As the developer, I also used this project to demonstrate my full-stack engineering skills — balancing technical rigor with real-world usability.
-// TODO remove and probably add to CV instead
-
 ---
 
 ### Goals
@@ -30,11 +27,11 @@ This portfolio website was designed for a fine arts student to showcase visual a
 | **Validation**           | Zod                   | Ensures schema correctness at runtime           |
 | **Linting & Formatting** | ESLint + Prettier     | Code quality and style consistency              |
 | **Deployment**           | Vercel                | Fast CI/CD and serverless Next.js support       |
-| **Containers**           | Docker                | Portability and isolated dev environment        |
+| **Docker is Docker**     | Docker                | Portability and isolated dev environment        |
 
 ---
 
-### Why Not Firebase or BaaS?
+### Why Not Firebase or other BaaS?
 
 While BaaS tools like Firebase and Supabase offer fast setup, I opted for a more manual approach to showcase:
 
