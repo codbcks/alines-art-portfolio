@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useEffect, useState } from 'react';
 import { Edit, Image as ImageIcon, Plus, Trash2 } from 'lucide-react';
 import { Gallery } from '@/types/Gallery';
@@ -45,6 +46,7 @@ const AdminGalleriesPage = () => {
     try {
       const data = await getGalleries();
       setGalleries(data);
+
       // Fetch artwork counts for all galleries
       const counts: Record<number, number> = {};
       await Promise.all(
@@ -59,6 +61,7 @@ const AdminGalleriesPage = () => {
         }),
       );
       setArtworkCounts(counts);
+
       if (data.length > 0 && !selectedGallery) {
         setSelectedGallery(data[0]);
       }
@@ -73,6 +76,7 @@ const AdminGalleriesPage = () => {
     try {
       const data = await getArtworksById(galleryId);
       setArtworks(data);
+
       // Update the count for this specific gallery
       setArtworkCounts((prev) => ({
         ...prev,
@@ -86,6 +90,7 @@ const AdminGalleriesPage = () => {
   const handleGallerySubmit = async (galleryData: Partial<Gallery>) => {
     try {
       let newOrUpdatedGallery: Gallery;
+
       if (editingGallery) {
         // Update existing gallery
         newOrUpdatedGallery = await updateGallery(editingGallery.id, galleryData);
@@ -98,12 +103,15 @@ const AdminGalleriesPage = () => {
           [newOrUpdatedGallery.id]: 0,
         }));
       }
+
       // Refresh galleries list
       await fetchGalleries();
+
       // Update selected gallery if it was edited
       if (editingGallery && selectedGallery?.id === editingGallery.id) {
         setSelectedGallery(newOrUpdatedGallery);
       }
+
       setShowGalleryForm(false);
       setEditingGallery(null);
     } catch (error) {
@@ -116,15 +124,18 @@ const AdminGalleriesPage = () => {
       console.error('No gallery selected');
       return;
     }
+
     try {
       if (!editingArtwork) {
         artworkData.position = artworks.length;
       }
+
       const success = await saveArtwork(
         artworkData,
         selectedGallery!.id,
         editingArtwork ?? undefined,
       );
+
       if (success) {
         await fetchArtworks(selectedGallery!.id);
         setShowArtworkForm(false);
@@ -139,6 +150,7 @@ const AdminGalleriesPage = () => {
     if (confirm(`Are you sure you want to delete "${gallery.title}"?`)) {
       try {
         const success = await removeGallery(gallery.id);
+
         if (success) {
           // Remove the gallery from artwork counts
           setArtworkCounts((prev) => {
@@ -146,8 +158,10 @@ const AdminGalleriesPage = () => {
             delete newCounts[gallery.id];
             return newCounts;
           });
+
           // Refresh galleries list
           await fetchGalleries();
+
           // Reset selected gallery if it was the deleted one
           if (selectedGallery?.id === gallery.id) {
             const remainingGalleries = galleries.filter((g) => g.id !== gallery.id);
@@ -164,6 +178,7 @@ const AdminGalleriesPage = () => {
     if (confirm(`Are you sure you want to delete "${artwork.title}"?`)) {
       try {
         const success = await deleteArtwork(artwork.id);
+
         if (success) {
           await fetchArtworks(selectedGallery!.id);
         }
@@ -175,6 +190,7 @@ const AdminGalleriesPage = () => {
 
   const handleArtworkReorder = async (reorderedArtworks: Artwork[]) => {
     if (!selectedGallery) return;
+
     setReordering(true);
     try {
       const success = await reorderArtworks(selectedGallery.id, reorderedArtworks);
@@ -201,12 +217,13 @@ const AdminGalleriesPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 pt-6">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600">Manage your portfolio content</p>
+          <h1 className="mb-2 text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+          <p className="text-gray-600">Manage your galleries and artworks</p>
         </div>
+
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
           {/* Galleries Sidebar */}
           <div className="lg:col-span-1">
@@ -220,6 +237,7 @@ const AdminGalleriesPage = () => {
                   <Plus size={16} />
                 </button>
               </div>
+
               <div className="space-y-2">
                 {galleries.map((gallery) => (
                   <div
@@ -263,6 +281,7 @@ const AdminGalleriesPage = () => {
               </div>
             </div>
           </div>
+
           {/* Main Content */}
           <div className="lg:col-span-3">
             {selectedGallery ? (
@@ -280,6 +299,7 @@ const AdminGalleriesPage = () => {
                     <span>Add Artwork</span>
                   </button>
                 </div>
+
                 <ArtworkList
                   artworks={artworks}
                   onEdit={(artwork) => {
@@ -302,6 +322,7 @@ const AdminGalleriesPage = () => {
             )}
           </div>
         </div>
+
         {/* Modals */}
         {showGalleryForm && (
           <GalleryForm
@@ -313,6 +334,7 @@ const AdminGalleriesPage = () => {
             }}
           />
         )}
+
         {showArtworkForm && (
           <ArtworkForm
             artwork={editingArtwork}

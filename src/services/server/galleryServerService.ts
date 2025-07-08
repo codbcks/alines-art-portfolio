@@ -34,3 +34,9 @@ export const queryGalleryBySlug = async (slug: string) => {
     where: (galleries, { eq }) => eq(galleries.slug, slug),
   });
 };
+
+export const queryGalleryByTitle = async (title: string) => {
+  return db.query.galleries.findFirst({
+    where: (galleries, { eq }) => eq(galleries.title, title),
+  });
+};
