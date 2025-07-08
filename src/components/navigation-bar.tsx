@@ -48,16 +48,18 @@ const NavigationBar = () => {
                 <div className="py-2">
                   {loading ? (
                     <div className="px-4 py-2 text-sm text-gray-500">Loading galleries...</div>
-                  ) : galleries.length === 0 ? (
+                  ) : galleries.filter((gallery) => gallery.title !== 'Home Page').length === 0 ? (
                     <div className="px-4 py-2 text-sm text-gray-500">No galleries found</div>
                   ) : (
-                    galleries.map((gallery) => (
-                      <Link key={gallery.id} href={`/${gallery.slug}`}>
-                        <span className="block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 hover:text-purple-900">
-                          {gallery.title}
-                        </span>
-                      </Link>
-                    ))
+                    galleries
+                      .filter((gallery) => gallery.title !== 'Home Page')
+                      .map((gallery) => (
+                        <Link key={gallery.id} href={`/${gallery.slug}`}>
+                          <span className="block px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-50 hover:text-purple-900">
+                            {gallery.title}
+                          </span>
+                        </Link>
+                      ))
                   )}
                 </div>
               </div>
@@ -151,22 +153,24 @@ const NavigationBar = () => {
               <div className="ml-4 max-h-80 space-y-1 overflow-y-auto pt-1">
                 {loading ? (
                   <div className="px-3 py-2 text-sm text-gray-500">Loading galleries...</div>
-                ) : galleries.length === 0 ? (
+                ) : galleries.filter((gallery) => gallery.title !== 'Home Page').length === 0 ? (
                   <div className="px-3 py-2 text-sm text-gray-500">No galleries found</div>
                 ) : (
-                  galleries.map((gallery) => (
-                    <Link
-                      key={gallery.id}
-                      href={`/${gallery.slug}`}
-                      className="block rounded-md px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
-                      onClick={() => {
-                        setIsMenuOpen(false);
-                        setIsGalleryOpen(false);
-                      }}
-                    >
-                      {gallery.title}
-                    </Link>
-                  ))
+                  galleries
+                    .filter((gallery) => gallery.title !== 'Home Page')
+                    .map((gallery) => (
+                      <Link
+                        key={gallery.id}
+                        href={`/${gallery.slug}`}
+                        className="block rounded-md px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          setIsGalleryOpen(false);
+                        }}
+                      >
+                        {gallery.title}
+                      </Link>
+                    ))
                 )}
               </div>
             </div>
