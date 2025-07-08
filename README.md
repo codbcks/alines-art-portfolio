@@ -1,7 +1,5 @@
 ## Architecture and Rationales
 
----
-
 ### Goals
 
 - Build a clean, responsive gallery experience optimised for visual content
@@ -41,3 +39,13 @@ While BaaS tools like Firebase and Supabase offer fast setup, I opted for a more
 - Schema validation and modular backend logic
 
 ---
+
+### WIP Photos
+
+![image](https://github.com/user-attachments/assets/fb6b244a-9136-46e8-9004-433b66ec2d2a)
+
+![image](https://github.com/user-attachments/assets/5f6e47df-0cef-4107-ae17-3e89c543403b)
+
+![image](https://github.com/user-attachments/assets/a9c5d803-2d58-47b5-a1c2-a34c84f510eb)
+
+
