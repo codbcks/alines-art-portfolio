@@ -32,6 +32,11 @@ export const queryAllGalleries = async (): Promise<Gallery[]> => {
 export const queryGalleryBySlug = async (slug: string) => {
   return db.query.galleries.findFirst({
     where: (galleries, { eq }) => eq(galleries.slug, slug),
+    with: {
+      artworks: {
+        orderBy: (artworks, { asc }) => asc(artworks.position), // Order by position
+      },
+    },
   });
 };
 
